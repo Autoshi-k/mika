@@ -1,7 +1,8 @@
-package repository
+package sql
 
 import (
-	"something/domain/aggregate"
+	"github.com/google/uuid"
+	"something/aggregate"
 	"something/domain/service"
 	"something/infrastructure/db"
 )
@@ -18,15 +19,15 @@ func (repo mySqlServiceRepo) Add(service aggregate.Service) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Update(id string, service aggregate.Service) (err error) {
+func (repo mySqlServiceRepo) Update(id uuid.UUID, service aggregate.Service) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Remove(id string) (err error) {
+func (repo mySqlServiceRepo) Remove(id uuid.UUID) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Get(id string) (service aggregate.Service, err error) {
+func (repo mySqlServiceRepo) Get(id uuid.UUID) (service aggregate.Service, err error) {
 	return
 }
 

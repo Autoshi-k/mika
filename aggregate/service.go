@@ -13,7 +13,7 @@ var (
 type Service struct {
 	IsActive bool
 	Pricing  float64
-	Id       string
+	Id       uuid.UUID
 	Name     string
 	Label    string
 }
@@ -30,7 +30,7 @@ func NewService(name, label string, pricing float64) (Service, error) {
 	return Service{
 		IsActive: true,
 		Pricing:  pricing,
-		Id:       uuid.NewString(),
+		Id:       uuid.New(),
 		Label:    label,
 	}, nil
 }
