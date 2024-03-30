@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/google/uuid"
 	"something/aggregate"
 	"something/application/contracts"
 	"something/domain/repositories/service"
@@ -18,27 +17,22 @@ func NewAdministrationService(services service.Repository) contracts.Administrat
 	return AdministrationService{services: services}
 }
 
-func (s AdministrationService) CreateNewService(name, label string, pricing float64) serviceReply.Reply {
+func (s AdministrationService) CreateNewService(name, label string, pricing float64) (string, serviceReply.Reply) {
 	srvc, err := aggregate.NewService(name, label, pricing)
 	if err != nil {
-		return serviceReply.NewInternalError(err)
+		return "", serviceReply.NewInternalError(err)
 	}
 
 	err = s.services.Add(srvc.GetId(), srvc)
 	if err != nil {
-		return serviceReply.NewDbError(err)
+		return "", serviceReply.NewDbError(err)
 	}
 
-	return nil
+	return srvc.GetId(), nil
 }
 
 func (s AdministrationService) EditService(id, name, label string, pricing float64) serviceReply.Reply {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return serviceReply.NewInternalError(err)
-	}
-
-	srvc, err := s.services.Get(uid)
+	srvc, err := s.services.Get(id)
 	if err != nil {
 		return serviceReply.NewDbError(err)
 	}
@@ -47,7 +41,7 @@ func (s AdministrationService) EditService(id, name, label string, pricing float
 	srvc.SetLabel(label)
 	srvc.SetPricing(pricing)
 
-	err = s.services.Update(uid, srvc)
+	err = s.services.Update(id, srvc)
 	if err != nil {
 		return serviceReply.NewDbError(err)
 	}
@@ -56,12 +50,7 @@ func (s AdministrationService) EditService(id, name, label string, pricing float
 }
 
 func (s AdministrationService) RemoveService(id string) serviceReply.Reply {
-	uid, err := uuid.Parse(id)
-	if err != nil {
-		return serviceReply.NewInternalError(err)
-	}
-
-	err = s.services.Remove(uid)
+	err := s.services.Remove(id)
 	if err != nil {
 		return serviceReply.NewDbError(err)
 	}

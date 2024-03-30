@@ -2,6 +2,7 @@ package notsureyet
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"something/application/contracts"
@@ -31,10 +32,16 @@ func (c controller) CreateNewService(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sErr := c.service.CreateNewService(req.Name, req.Label, req.Pricing)
+	res, sErr := c.service.CreateNewService(req.Name, req.Label, req.Pricing)
 	if sErr != nil {
 		// todo can't get sErr.Error(), why
 		http.Error(w, "sErr", http.StatusInternalServerError)
+	}
+
+	//w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte(res))
+	if err != nil {
+		fmt.Println(err)
 	}
 }
 
