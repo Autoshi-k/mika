@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"something/aggregate"
-	"something/domain/service"
+	"something/domain/repositories/service"
 	"sync"
 )
 

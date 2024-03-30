@@ -20,9 +20,9 @@ func TestAdministrationService(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = as.services.Add(srv1)
-	if err != nil {
-		t.Error(err)
+	sErr := as.CreateNewService("my-first-service", "The Best Service", 5.0)
+	if sErr != nil {
+		t.Error(sErr)
 	}
 
 	srv2, err := aggregate.NewService("my-second-service", "A great Service", 10.0)
