@@ -2,7 +2,6 @@ package memory
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"something/aggregate"
 	"something/domain/repositories/service"
 	"sync"
@@ -10,14 +9,14 @@ import (
 
 type memoryRepository struct {
 	sync.Mutex
-	services map[uuid.UUID]aggregate.Service
+	services map[string]aggregate.Service
 }
 
 func NewServiceRepository() service.Repository {
-	return &memoryRepository{services: make(map[uuid.UUID]aggregate.Service)}
+	return &memoryRepository{services: make(map[string]aggregate.Service)}
 }
 
-func (repo memoryRepository) Add(id uuid.UUID, s aggregate.Service) (err error) {
+func (repo memoryRepository) Add(id string, s aggregate.Service) (err error) {
 	repo.Lock()
 	defer repo.Unlock()
 
@@ -29,7 +28,7 @@ func (repo memoryRepository) Add(id uuid.UUID, s aggregate.Service) (err error) 
 	}
 }
 
-func (repo memoryRepository) Update(id uuid.UUID, s aggregate.Service) (err error) {
+func (repo memoryRepository) Update(id string, s aggregate.Service) (err error) {
 	repo.Lock()
 	defer repo.Unlock()
 
@@ -41,7 +40,7 @@ func (repo memoryRepository) Update(id uuid.UUID, s aggregate.Service) (err erro
 	}
 }
 
-func (repo memoryRepository) Remove(id uuid.UUID) (err error) {
+func (repo memoryRepository) Remove(id string) (err error) {
 	repo.Lock()
 	defer repo.Unlock()
 
@@ -53,7 +52,7 @@ func (repo memoryRepository) Remove(id uuid.UUID) (err error) {
 	}
 }
 
-func (repo memoryRepository) Get(id uuid.UUID) (aggregate.Service, error) {
+func (repo memoryRepository) Get(id string) (aggregate.Service, error) {
 	if s, ok := repo.services[id]; !ok {
 		return aggregate.Service{}, service.ErrServiceNotFound
 	} else {

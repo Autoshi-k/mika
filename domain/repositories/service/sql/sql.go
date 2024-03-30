@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"github.com/google/uuid"
 	"something/aggregate"
 	"something/domain/repositories/service"
 	"something/infrastructure/db"
@@ -15,19 +14,19 @@ func NewServiceRepository() service.Repository {
 	return &mySqlServiceRepo{db: db.NewDbConnection()}
 }
 
-func (repo mySqlServiceRepo) Add(id uuid.UUID, service aggregate.Service) (err error) {
+func (repo mySqlServiceRepo) Add(id string, service aggregate.Service) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Update(id uuid.UUID, service aggregate.Service) (err error) {
+func (repo mySqlServiceRepo) Update(id string, service aggregate.Service) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Remove(id uuid.UUID) (err error) {
+func (repo mySqlServiceRepo) Remove(id string) (err error) {
 	return
 }
 
-func (repo mySqlServiceRepo) Get(id uuid.UUID) (service aggregate.Service, err error) {
+func (repo mySqlServiceRepo) Get(id string) (service aggregate.Service, err error) {
 	return
 }
 

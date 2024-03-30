@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"something/aggregate"
 )
 
@@ -13,9 +12,9 @@ var (
 )
 
 type Repository interface {
-	Add(id uuid.UUID, service aggregate.Service) (err error)
-	Update(id uuid.UUID, service aggregate.Service) (err error)
-	Remove(id uuid.UUID) (err error)
-	Get(id uuid.UUID) (service aggregate.Service, err error)
+	Add(id string, service aggregate.Service) (err error)
+	Update(id string, service aggregate.Service) (err error)
+	Remove(id string) (err error)
+	Get(id string) (service aggregate.Service, err error)
 	GetAll() (services []aggregate.Service, err error)
 }

@@ -13,7 +13,7 @@ var (
 
 type Service struct {
 	active  bool
-	id      uuid.UUID
+	id      string
 	pricing float64
 	name    string
 	label   string
@@ -31,16 +31,17 @@ func NewService(name, label string, pricing float64) (Service, error) {
 	return Service{
 		active:  true,
 		pricing: pricing,
-		id:      uuid.New(),
+		id:      uuid.NewString(),
+		name:    name,
 		label:   label,
 	}, nil
 }
 
-func (s Service) GetId() uuid.UUID {
+func (s *Service) GetId() string {
 	return s.id
 }
 
-func (s Service) SetName(name string) error {
+func (s *Service) SetName(name string) error {
 	if !isValidServiceName(name) {
 		return ErrInvalidName
 	}
@@ -49,7 +50,7 @@ func (s Service) SetName(name string) error {
 	return nil
 }
 
-func (s Service) SetLabel(label string) error {
+func (s *Service) SetLabel(label string) error {
 	if !isValidServiceName(label) {
 		return ErrInvalidLabel
 	}
@@ -58,7 +59,7 @@ func (s Service) SetLabel(label string) error {
 	return nil
 }
 
-func (s Service) SetPricing(pricing float64) error {
+func (s *Service) SetPricing(pricing float64) error {
 	if pricing >= 0 {
 		return ErrInvalidLabel
 	}
