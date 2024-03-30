@@ -20,6 +20,9 @@ func NewAdministrationController(r *mux.Router, service contracts.Administration
 
 func (c controller) CreateNewService(w http.ResponseWriter, r *http.Request) {
 	req := struct {
+		Name    string
+		Label   string
+		Pricing float64
 	}{}
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -27,13 +30,49 @@ func (c controller) CreateNewService(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	c.service.CreateNewService()
+
+	sErr := c.service.CreateNewService(req.Name, req.Label, req.Pricing)
+	if sErr != nil {
+		// todo can't get sErr.Error(), why
+		http.Error(w, "sErr", http.StatusInternalServerError)
+	}
 }
 
 func (c controller) EditService(w http.ResponseWriter, r *http.Request) {
-	c.service.EditService()
+	req := struct {
+		Id      string
+		Name    string
+		Label   string
+		Pricing float64
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	sErr := c.service.EditService(req.Id, req.Name, req.Label, req.Pricing)
+	if sErr != nil {
+		// todo can't get sErr.Error(), why
+		http.Error(w, "sErr", http.StatusInternalServerError)
+	}
 }
 
 func (c controller) RemoveService(w http.ResponseWriter, r *http.Request) {
-	c.service.RemoveService()
+	req := struct {
+		Id string
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	sErr := c.service.RemoveService(req.Id)
+	if sErr != nil {
+		// todo can't get sErr.Error(), why
+		http.Error(w, "sErr", http.StatusInternalServerError)
+	}
 }

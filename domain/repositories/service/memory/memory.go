@@ -17,14 +17,14 @@ func NewServiceRepository() service.Repository {
 	return &memoryRepository{services: make(map[uuid.UUID]aggregate.Service)}
 }
 
-func (repo memoryRepository) Add(s aggregate.Service) (err error) {
+func (repo memoryRepository) Add(id uuid.UUID, s aggregate.Service) (err error) {
 	repo.Lock()
 	defer repo.Unlock()
 
-	if _, ok := repo.services[s.Id]; ok {
+	if _, ok := repo.services[id]; ok {
 		return fmt.Errorf("service already exist %w", service.ErrFailedToAddCustomer)
 	} else {
-		repo.services[s.Id] = s
+		repo.services[id] = s
 		return nil
 	}
 }

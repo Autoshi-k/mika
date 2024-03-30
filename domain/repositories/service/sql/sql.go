@@ -15,7 +15,7 @@ func NewServiceRepository() service.Repository {
 	return &mySqlServiceRepo{db: db.NewDbConnection()}
 }
 
-func (repo mySqlServiceRepo) Add(service aggregate.Service) (err error) {
+func (repo mySqlServiceRepo) Add(id uuid.UUID, service aggregate.Service) (err error) {
 	return
 }
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"something/application/contracts"
 	"something/application/services"
+	"something/domain/repositories/service/memory"
 	"something/notsureyet"
 )
 
@@ -14,16 +15,16 @@ type App struct {
 }
 
 func main() {
-	administration, err := services.NewAdministrationService(services.MemoryServicesRepository())
-	if err != nil {
-		panic(err)
-	}
+	administration := services.NewAdministrationService(memory.NewServiceRepository())
 
 	app := App{administration: administration}
 	r := mux.NewRouter()
 	notsureyet.NewAdministrationController(r, app.administration)
 
 	fmt.Println("program running")
-	http.ListenAndServe(":80", r)
+	err := http.ListenAndServe(":8002", r)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("program stopped")
 }

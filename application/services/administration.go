@@ -24,7 +24,7 @@ func (s AdministrationService) CreateNewService(name, label string, pricing floa
 		return serviceReply.NewInternalError(err)
 	}
 
-	err = s.services.Add(srvc)
+	err = s.services.Add(srvc.GetId(), srvc)
 	if err != nil {
 		return serviceReply.NewDbError(err)
 	}

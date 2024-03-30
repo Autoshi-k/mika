@@ -13,7 +13,7 @@ var (
 )
 
 type Repository interface {
-	Add(service aggregate.Service) (err error)
+	Add(id uuid.UUID, service aggregate.Service) (err error)
 	Update(id uuid.UUID, service aggregate.Service) (err error)
 	Remove(id uuid.UUID) (err error)
 	Get(id uuid.UUID) (service aggregate.Service, err error)

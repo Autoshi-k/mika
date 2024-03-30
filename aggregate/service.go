@@ -20,11 +20,11 @@ type Service struct {
 }
 
 func NewService(name, label string, pricing float64) (Service, error) {
-	if len(label) == 0 {
+	if !isValidServiceName(label) {
 		return Service{}, ErrInvalidLabel
 	}
 
-	if isValidServiceName(name) {
+	if !isValidServiceName(name) {
 		return Service{}, ErrInvalidName
 	}
 
@@ -34,6 +34,10 @@ func NewService(name, label string, pricing float64) (Service, error) {
 		id:      uuid.New(),
 		label:   label,
 	}, nil
+}
+
+func (s Service) GetId() uuid.UUID {
+	return s.id
 }
 
 func (s Service) SetName(name string) error {
