@@ -21,6 +21,14 @@ func NewInternalError(err error) Reply {
 	}
 }
 
+func NewBadRequest(errId string, err error) Reply {
+	return &Response{
+		status: "failure",
+		errId:  errId,
+		data:   err.Error(),
+	}
+}
+
 func NewDbError(err error) Reply {
 	return &Response{
 		status: "failure",

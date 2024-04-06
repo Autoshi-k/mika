@@ -9,11 +9,11 @@ import (
 )
 
 type controller struct {
-	service contracts.AdministrationService
+	service contracts.App
 }
 
-func NewAdministrationController(r *mux.Router, service contracts.AdministrationService) {
-	c := controller{service: service}
+func NewAdministrationController(r *mux.Router, app contracts.App) {
+	c := controller{service: app}
 	r.HandleFunc("/hello", c.CreateNewService)
 	r.HandleFunc("/editService", c.EditService)
 	r.HandleFunc("/removeService", c.RemoveService)
