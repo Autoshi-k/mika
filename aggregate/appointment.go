@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"something/domain/entity"
+	"strings"
 	"time"
 )
 
@@ -12,28 +13,31 @@ var (
 )
 
 type Appointment struct {
+	appointmentTimings
+	id         string
+	serviceIds string
+	userId     string
+	price      float64
 	approved   bool
 	canceled   bool
-	id         uuid.UUID
-	price      float64
-	serviceIds string
-	user       entity.User
-	appointmentTimings
 }
 
 type appointmentTimings struct {
-	Duration           time.Duration
-	PreBufferDuration  time.Duration
-	PostBufferDuration time.Duration
-	StartTime          time.Time
-	EndTime            time.Time
+	entity.DurationDetails
+	StartTime time.Time
+	EndTime   time.Time
 }
 
-func NewAppointment(user entity.User, serviceIds string, price float64) (Appointment, error) {
+func NewAppointment(userId string, serviceIds []string, startTime time.Time, durations entity.DurationDetails, pricing float64) (Appointment, error) {
 	return Appointment{
-		id:         uuid.New(),
-		user:       user,
-		serviceIds: serviceIds,
-		price:      price,
+		id:         uuid.NewString(),
+		userId:     userId,
+		serviceIds: strings.Join(serviceIds, ","),
+		appointmentTimings: appointmentTimings{
+			DurationDetails: durations,
+			StartTime:       startTime,
+			EndTime:         startTime.Add(durations.Duration),
+		},
+		price: pricing,
 	}, nil
 }
