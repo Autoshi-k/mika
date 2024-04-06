@@ -44,15 +44,19 @@ func (repo memoryRepository) Remove(id string) (err error) {
 	repo.Lock()
 	defer repo.Unlock()
 
-	if _, ok := repo.services[id]; !ok {
+	if s, ok := repo.services[id]; !ok {
 		return service.ErrServiceNotFound
 	} else {
-		delete(repo.services, id)
+		s.SetAsInactive()
+		repo.services[id] = s
 		return nil
 	}
 }
 
 func (repo memoryRepository) Get(id string) (aggregate.Service, error) {
+	repo.Lock()
+	defer repo.Unlock()
+
 	if s, ok := repo.services[id]; !ok {
 		return aggregate.Service{}, service.ErrServiceNotFound
 	} else {
@@ -60,10 +64,27 @@ func (repo memoryRepository) Get(id string) (aggregate.Service, error) {
 	}
 }
 
-func (repo memoryRepository) GetAll() (services []aggregate.Service, err error) {
-	ss := make([]aggregate.Service, len(repo.services))
+func (repo memoryRepository) GetMany(ids []string) (services aggregate.Services, err error) {
+	repo.Lock()
+	defer repo.Unlock()
+
+	services = make([]aggregate.Service, len(ids))
+	for i, id := range ids {
+		if s, ok := repo.services[id]; !ok {
+			return services, fmt.Errorf("service id [%s] err: %w", id, service.ErrServiceNotFound)
+		} else {
+			services[i] = s
+		}
+	}
+	return services, nil
+}
+
+func (repo memoryRepository) GetAll() (services aggregate.Services, err error) {
+	ss := make(aggregate.Services, len(repo.services))
 	for _, v := range services {
-		ss = append(ss, v)
+		if v.IsActive() {
+			ss = append(ss, v)
+		}
 	}
 	return ss, nil
 }

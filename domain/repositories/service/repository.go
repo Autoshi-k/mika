@@ -16,5 +16,6 @@ type Repository interface {
 	Update(id string, service aggregate.Service) (err error)
 	Remove(id string) (err error)
 	Get(id string) (service aggregate.Service, err error)
-	GetAll() (services []aggregate.Service, err error)
+	GetMany(ids []string) (services aggregate.Services, err error)
+	GetAll() (services aggregate.Services, err error)
 }

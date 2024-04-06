@@ -3,8 +3,10 @@ package services
 import (
 	"something/aggregate"
 	"something/application/contracts"
+	"something/domain/entity"
 	"something/domain/repositories/service"
 	"something/infrastructure/serviceReply"
+	"time"
 )
 
 type AdministrationConfiguration func(s *AdministrationService) error
@@ -56,4 +58,29 @@ func (s AdministrationService) RemoveService(id string) serviceReply.Reply {
 	}
 
 	return nil
+}
+
+func (s AdministrationService) GetServicesDurations(serviceIds []string) (time.Duration, serviceReply.Reply) {
+	services, err := s.services.GetMany(serviceIds)
+	if err != nil {
+		return 0, serviceReply.NewDbError(err)
+	}
+	return services.GetDurations().CombinedDuration(), nil
+}
+
+func (s AdministrationService) GetAllAvailableServices() (aggregate.Services, serviceReply.Reply) {
+	services, err := s.services.GetAll()
+	if err != nil {
+		return services, serviceReply.NewDbError(err)
+	}
+	return services, nil
+}
+
+func (s AdministrationService) GetCombinedServicesDetails(serviceIds []string) (entity.DurationDetails, float64, serviceReply.Reply) {
+	services, err := s.services.GetMany(serviceIds)
+	if err != nil {
+		return entity.DurationDetails{}, 0, serviceReply.NewDbError(err)
+	}
+
+	return services.GetDurations(), services.GetPricing(), nil
 }
