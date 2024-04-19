@@ -19,8 +19,8 @@ func NewAdministrationService(services service.Repository) contracts.Administrat
 	return AdministrationService{services: services}
 }
 
-func (s AdministrationService) CreateNewService(name, label string, pricing float64) (string, serviceReply.Reply) {
-	srvc, err := aggregate.NewService(name, label, pricing)
+func (s AdministrationService) CreateNewService(name, label string, pricing float64, durations entity.DurationDetails) (string, serviceReply.Reply) {
+	srvc, err := aggregate.NewService(name, label, pricing, durations)
 	if err != nil {
 		return "", serviceReply.NewInternalError(err)
 	}

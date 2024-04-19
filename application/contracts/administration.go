@@ -8,7 +8,7 @@ import (
 )
 
 type AdministrationService interface {
-	CreateNewService(name, label string, pricing float64) (string, serviceReply.Reply)
+	CreateNewService(name, label string, pricing float64, durations entity.DurationDetails) (string, serviceReply.Reply)
 	EditService(id, name, label string, pricing float64) serviceReply.Reply
 	RemoveService(id string) serviceReply.Reply
 	GetServicesDurations(serviceIds []string) (time.Duration, serviceReply.Reply)

@@ -1,6 +1,7 @@
 package serviceReply
 
 type Reply interface {
+	Error() string
 }
 
 type Response struct {
@@ -14,7 +15,7 @@ func NewErr() Reply { // TODO
 }
 
 func NewInternalError(err error) Reply {
-	return &Response{
+	return Response{
 		status: "failure",
 		errId:  "internalServiceErr",
 		data:   err.Error(),
@@ -22,7 +23,7 @@ func NewInternalError(err error) Reply {
 }
 
 func NewBadRequest(errId string, err error) Reply {
-	return &Response{
+	return Response{
 		status: "failure",
 		errId:  errId,
 		data:   err.Error(),
@@ -30,10 +31,17 @@ func NewBadRequest(errId string, err error) Reply {
 }
 
 func NewDbError(err error) Reply {
-	return &Response{
+	return Response{
 		status: "failure",
 		errId:  "dbError",
 		data:   err.Error(),
+	}
+}
+
+func NewSuccessfulReply(data interface{}) Reply {
+	return Response{
+		status: "success",
+		data:   data,
 	}
 }
 

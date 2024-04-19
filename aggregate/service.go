@@ -23,7 +23,7 @@ type Service struct {
 	entity.DurationDetails
 }
 
-func NewService(name, label string, pricing float64) (Service, error) {
+func NewService(name, label string, pricing float64, durations entity.DurationDetails) (Service, error) {
 	if !isValidServiceName(label) {
 		return Service{}, ErrInvalidLabel
 	}
@@ -33,11 +33,12 @@ func NewService(name, label string, pricing float64) (Service, error) {
 	}
 
 	return Service{
-		active:  true,
-		pricing: pricing,
-		id:      uuid.NewString(),
-		name:    name,
-		label:   label,
+		active:          true,
+		pricing:         pricing,
+		id:              uuid.NewString(),
+		name:            name,
+		label:           label,
+		DurationDetails: durations,
 	}, nil
 }
 
