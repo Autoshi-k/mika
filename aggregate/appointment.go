@@ -13,31 +13,31 @@ var (
 )
 
 type Appointment struct {
-	appointmentTimings
-	id         string
+	TimeBlock
 	serviceIds string
 	userId     string
 	price      float64
 	approved   bool
-	canceled   bool
 }
 
-type appointmentTimings struct {
-	entity.DurationDetails
-	StartTime time.Time
-	EndTime   time.Time
+type TimeBlock struct {
+	entity.TimeBlockTimings
+	id       string
+	canceled bool
 }
 
 func NewAppointment(userId string, serviceIds []string, startTime time.Time, durations entity.DurationDetails, pricing float64) (Appointment, error) {
 	return Appointment{
-		id:         uuid.NewString(),
+		TimeBlock: TimeBlock{
+			id: uuid.NewString(),
+			TimeBlockTimings: entity.TimeBlockTimings{
+				DurationDetails: durations,
+				StartTime:       startTime,
+				EndTime:         startTime.Add(durations.Duration),
+			},
+		},
 		userId:     userId,
 		serviceIds: strings.Join(serviceIds, ","),
-		appointmentTimings: appointmentTimings{
-			DurationDetails: durations,
-			StartTime:       startTime,
-			EndTime:         startTime.Add(durations.Duration),
-		},
-		price: pricing,
+		price:      pricing,
 	}, nil
 }
