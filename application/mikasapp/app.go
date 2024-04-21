@@ -13,17 +13,19 @@ import (
 type App struct {
 	administration contracts.AdministrationService
 	scheduler      contracts.SchedulerService
+	services       contracts.ProductsService
 }
 
-func NewApp(administration contracts.AdministrationService, scheduler contracts.SchedulerService) contracts.App {
+func NewApp(administration contracts.AdministrationService, scheduler contracts.SchedulerService, services contracts.ProductsService) contracts.App {
 	return App{
 		administration: administration,
 		scheduler:      scheduler,
+		services:       services,
 	}
 }
 
 func (app App) GetFreeSlotsForAppointments(ctx context.Context, services []string) (entity.Times, serviceReply.Reply) {
-	overallDuration, sErr := app.administration.GetServicesDurations(services)
+	overallDuration, sErr := app.services.GetServicesDurations(services)
 	if sErr != nil {
 		return entity.Times{}, sErr
 	}
@@ -32,25 +34,25 @@ func (app App) GetFreeSlotsForAppointments(ctx context.Context, services []strin
 }
 
 func (app App) GetAllAvailableServices(ctx context.Context) (aggregate.Services, serviceReply.Reply) {
-	return app.administration.GetAllAvailableServices()
+	return app.services.GetAllAvailableServices()
 }
 
 func (app App) SetAppointment(ctx context.Context, user string, services []string, startTime time.Time) serviceReply.Reply {
 	if availableTimeSlots, sErr := app.GetFreeSlotsForAppointments(ctx, services); sErr != nil {
 		return sErr
-	} else if finalDuration, finalPricing, sErr := app.administration.GetCombinedServicesDetails(services); sErr != nil {
+	} else if finalDuration, finalPricing, sErr := app.services.GetCombinedServicesDetails(services); sErr != nil {
 		return sErr
 	} else if !availableTimeSlots.Contains(startTime) {
 		return serviceReply.NewBadRequest("setAppointmentBadTime", fmt.Errorf("bad request - startTime is not available"))
+	} else if _, sErr = app.scheduler.SetNewAppointment(entity.User{}, services, entity.NewTimeBlockTimings(startTime, finalDuration), finalPricing); sErr != nil {
+		return sErr
 	} else {
-		appointment, _ := aggregate.NewAppointment(user, services, startTime, finalDuration, finalPricing)
-		app.scheduler.SetNewAppointment(appointment)
-		return nil
+		return nil // todo need to return id
 	}
 }
 
 func (app App) AddNewService(ctx context.Context, name, label string, durations entity.DurationDetails, pricing, orderBeforeMinutes float64, availableInDays int) (string, serviceReply.Reply) {
-	return app.administration.CreateNewService(name, label, pricing, durations)
+	return app.services.CreateNewService(name, label, pricing, durations)
 }
 
 func (app App) UpdateService(ctx context.Context, id, name, label string, durations entity.DurationDetails, pricing, orderBeforeMinutes float64, availableInDays int) serviceReply.Reply {
@@ -59,5 +61,5 @@ func (app App) UpdateService(ctx context.Context, id, name, label string, durati
 }
 
 func (app App) RemoveService(ctx context.Context, id string) serviceReply.Reply {
-	return app.administration.RemoveService(id)
+	return app.services.RemoveService(id)
 }
