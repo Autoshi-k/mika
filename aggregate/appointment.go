@@ -17,13 +17,13 @@ type Appointment struct {
 	serviceIds string
 	userId     string
 	price      float64
-	approved   bool
+	approved   time.Time
 }
 
 type TimeBlock struct {
 	entity.TimeBlockTimings
 	id       string
-	canceled bool
+	canceled time.Time
 }
 
 func NewAppointment(userId string, serviceIds []string, startTime time.Time, durations entity.DurationDetails, pricing float64) (Appointment, error) {
@@ -40,4 +40,22 @@ func NewAppointment(userId string, serviceIds []string, startTime time.Time, dur
 		serviceIds: strings.Join(serviceIds, ","),
 		price:      pricing,
 	}, nil
+}
+
+func (a Appointment) Approve(t time.Time) Appointment {
+	a.approved = t
+	return a
+}
+
+func (a Appointment) IsApproved() bool {
+	return !a.approved.IsZero()
+}
+
+func (a Appointment) Cancel(t time.Time) Appointment {
+	a.canceled = t
+	return a
+}
+
+func (a Appointment) IsCanceled() bool {
+	return !a.canceled.IsZero()
 }
