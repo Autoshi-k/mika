@@ -19,8 +19,9 @@ type WorkDayListedSlots struct {
 }
 
 type slot struct {
-	t     time.Time
-	inUse bool
+	t                  time.Time
+	inUse              bool
+	invalidForDuration bool
 }
 
 func (wd WorkDayListedSlots) Reduce(durations []TimeBlockTimings, blockers []TimeBlockTimings) WorkDay {
@@ -38,12 +39,10 @@ func (wd WorkDayListedSlots) Reduce(durations []TimeBlockTimings, blockers []Tim
 }
 
 func (wd WorkDayListedSlots) ReduceByDuration(duration time.Duration) WorkDay {
-	for i, ts := range wd.timeSlots {
-		if ts.inUse {
-			curr := slot
-			for curr.Before(duration.EndTime) || curr.Equal(duration.EndTime) {
 
-			}
+	for i, ts := range wd.timeSlots {
+		if !ts.inUse {
+
 		}
 	}
 	return wd
@@ -60,7 +59,7 @@ func (wd WorkDayListedSlots) AvailableTimeSlots() []time.Time {
 	return availableSlots
 }
 
-func NewWorkDay(startTime, endTime time.Time, spacingMinutes int) (WorkDay, error) {
+func NewWorkday(startTime, endTime time.Time, spacingMinutes int) (WorkDay, error) {
 	if startTime.IsZero() {
 		return nil, fmt.Errorf("startTime is empty %v", startTime)
 	}
@@ -73,16 +72,33 @@ func NewWorkDay(startTime, endTime time.Time, spacingMinutes int) (WorkDay, erro
 		return nil, fmt.Errorf("spacing should be above zero, recommanded [10, 15, 30, ...] %d", spacingMinutes)
 	}
 
+	spacingDuration := time.Duration(spacingMinutes) * time.Minute
+
+	var slots []slot
+	timestamp := startTime
+	for timestamp.Before(endTime) {
+		slots = append(slots, slot{
+			t:     timestamp,
+			inUse: false,
+		})
+		timestamp = timestamp.Add(spacingDuration)
+	}
+
 	return WorkDayListedSlots{
-		timeSlots:   nil,
-		startTime:   time.Time{},
-		endTime:     time.Time{},
-		slotSpacing: 0,
+		timeSlots:   slots,
+		startTime:   startTime,
+		endTime:     endTime,
+		slotSpacing: spacingDuration,
 	}, nil
 }
 
 func getStartAndEndIndexes(spacing time.Duration, startTime time.Time, duration TimeBlockTimings) (start int, end int) {
 	diff := duration.StartTime.Sub(startTime).Minutes()
+
+	if spacing == 0 {
+		spacing = 1
+	}
+
 	shit := diff / spacing.Minutes()
 	start = int(shit) - 1
 
